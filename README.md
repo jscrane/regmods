@@ -1,4 +1,5 @@
 regmods
 =======
 
-Course-work for Regression Models course from Johns Hopkins via Coursera
+[Regression Models](https://www.coursera.org/course/regmods) Assignment.
+

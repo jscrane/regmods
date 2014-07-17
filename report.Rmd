@@ -1,0 +1,46 @@
+---
+title: "Regression Models Course Work"
+output: pdf_document
+---
+
+In this work we answer the questions "Do we get better mileage with automatic or manual transmission?" and "What is the size of the difference between automatic and manual?" drawing our conclusions from the _mtcars_ dataset. In summary, the answers to these questions are "Manual" and "It depends."
+
+```{r, echo=FALSE}
+data(mtcars)
+mtcars$am <- factor(mtcars$am, c(0, 1), labels=c("automatic", "manual"))
+plot(mtcars$am, mtcars$mpg, ylab = "mpg")
+```
+
+We load the _mtcars_ dataset, convert the _am_ column to a factor and plot. As can be seen, although the _whiskers_ overlap, the boxes don't, indicating some sort of effect.
+
+```{r}
+summary(lm(mpg ~ am, data=mtcars))$coef
+```
+
+From this simple linear fit, we note that the t-values for the coefficients are very high indicating that the probability of getting them by chance is small. Furthermore, the fit indicates that there is an expected gain for manual transmission over automatic of about 7.2 mpg.
+
+Let's see if we can do better and add more predictors to the model. Let's try horsepower, _hp_, and weight, _wt_:
+
+```{r}
+summary(lm(mpg ~ am + hp, data=mtcars))$coef
+```
+
+Adding in horsepower lowers the effect of manual transmission and also indicates that every additional horsepower costs about 0.06 mpg. Again the t-values indicate significance.
+
+```{r}
+summary(lm(mpg ~ am + hp + wt, data=mtcars))$coef
+```
+
+Considering weight further lowers the effect of manual transmission beyond significance, indicating a possible correlation between weight and transmission-type. Indeed, plotting mpg versus weight and indicating the transmission type shows that lighter cars tend to have manual transmission.
+
+```{r, echo=FALSE}
+plot(mtcars$wt, mtcars$mpg, pch=as.numeric(mtcars$am), xlab="weight", ylab="mpg")
+```
+
+Let's verify that with with an "analysis of variance" on three _different_ nested models:
+
+```{r}
+anova(lm(mpg ~ wt, data=mtcars), lm(mpg ~ wt + hp, data=mtcars), lm(mpg ~ wt + hp + am, data=mtcars))
+```
+
+The conclusion we draw from all of this is that weight is the main predictor of fuel consumption, followed by horsepower. In so far as transmission type has an effect, it is as a proxy for weight.
